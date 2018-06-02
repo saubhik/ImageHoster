@@ -1,7 +1,5 @@
 package com.upgrad.ImageHoster.controller;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.upgrad.ImageHoster.model.Image;
 import com.upgrad.ImageHoster.model.ProfilePhoto;
 import com.upgrad.ImageHoster.model.Tag;
@@ -12,7 +10,6 @@ import com.upgrad.ImageHoster.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,7 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -99,10 +97,10 @@ public class ImageControllerTest {
         image.setUploadDate(LocalDate.now());
 
         // setup the mock imageService to return the mock image as a List<Image>;
-        Mockito.when(imageService.getByTitleWithJoin(Mockito.anyString())).thenReturn(image);
+        Mockito.when(imageService.getByIdWithJoin(Mockito.anyInt())).thenReturn(image);
 
         // checks to see if the returned view contains the title of the image
-        this.mockMvc.perform(get("/images/someImageTitle"))
+        this.mockMvc.perform(get("/images/someImageId"))
                 .andExpect(content().string(containsString("This is an image")))
                 .andExpect(content().string(containsString("My Username")));
     }
@@ -141,7 +139,7 @@ public class ImageControllerTest {
                 .param("description", "description")
                 .param("tags", tags))
                 .andExpect(status().is(302))
-                .andExpect(redirectedUrl("/images/someImageTitle"));
+                .andExpect(redirectedUrl("/images/someImageId"));
     }
 
     @Test
@@ -152,11 +150,11 @@ public class ImageControllerTest {
         session.setAttribute("currUser", user);
 
         // setup the mock imageService to return an Image when trying
-        // to retrieve an image by some image title;
-        Mockito.when(imageService.getByTitle(Mockito.anyString())).thenReturn(new Image());
+        // to retrieve an image by some image id;
+        Mockito.when(imageService.getById(Mockito.anyInt())).thenReturn(new Image());
 
         // checks to see if we are redirected to the home page once we delete an image
-        this.mockMvc.perform(get("/images/someImageTitle/delete").session(session))
+        this.mockMvc.perform(get("/images/someImageId/delete").session(session))
                 .andExpect(status().is(302))
                 .andExpect(redirectedUrl("/"));
     }
@@ -180,14 +178,14 @@ public class ImageControllerTest {
         image.setTags(tags);
 
         // setup the mock imageService to return the mock image when
-        // trying to retrieve an image by its title
-        Mockito.when(imageService.getByTitleWithJoin(Mockito.anyString())).thenReturn(image);
+        // trying to retrieve an image by its id
+        Mockito.when(imageService.getByIdWithJoin(Mockito.anyInt())).thenReturn(image);
 
         // checks to see if the returned HTML contains:
         // 1) Edit Image
         // 2) the image's title
         // 3) the image's descriptions
-        this.mockMvc.perform(get("/images/someImageTitle/edit").session(session))
+        this.mockMvc.perform(get("/images/someImageId/edit").session(session))
                 .andExpect(content().string(containsString("Edit image")))
                 .andExpect(content().string(containsString(image.getTitle())))
                 .andExpect(content().string(containsString(image.getDescription())));
@@ -208,8 +206,8 @@ public class ImageControllerTest {
         String tags = "tag1, tag2";
 
         // setup the mock imageService to return the mock image when trying to retreive
-        // an image by its title
-        Mockito.when(imageService.getByTitleWithJoin(Mockito.anyString())).thenReturn(new Image());
+        // an image by its id
+        Mockito.when(imageService.getByIdWithJoin(Mockito.anyInt())).thenReturn(new Image());
 
         // checks to see if we redirect to the URL of the edited image
         this.mockMvc.perform(multipart("/upload")
@@ -219,6 +217,6 @@ public class ImageControllerTest {
                 .param("description", "description")
                 .param("tags", tags))
                 .andExpect(status().is(302))
-                .andExpect(redirectedUrl("/images/someImageTitle"));
+                .andExpect(redirectedUrl("/images/someImageId"));
     }
 }

@@ -27,22 +27,22 @@ public class ImageManager extends SessionManager {
     /**
      * This method retrieves an image by its title
      *
-     * @param title the title of the image that we are looking for
+     * @param id the id of the image that we are looking for
      *
      * @return an Image object that we retrieved by its title
      */
-    public Image getImageByTitle(final String title) {
+    public Image getImageById(final int id) {
         Session session = openSession();
 
         try {
             Image image = (Image)session.createCriteria(Image.class)
-                    .add(Restrictions.eq("title", title))
+                    .add(Restrictions.eq("id", id))
                     .uniqueResult(); // retrieves only 1 image
             commitSession(session);
 
             return image;
         } catch(HibernateException e) {
-            System.out.println("unable to retrieve an image from database by its title");
+            System.out.println("unable to retrieve an image from database by its id");
         }
 
         return null;
@@ -52,16 +52,16 @@ public class ImageManager extends SessionManager {
      * This method retrieves an image by its title, as well as the data
      * related to its tags, user, and user's profile photo
      *
-     * @param title the title of the image that we are looking for
+     * @param id the title of the image that we are looking for
      *
      * @return an Image object that we retrieved by its title
      */
-    public Image getImageByTitleWithJoins(final String title) {
+    public Image getImageByIdWithJoins(final int id) {
         Session session = openSession();
 
         try {
             Image image = (Image)session.createCriteria(Image.class)
-                    .add(Restrictions.eq("title", title))
+                    .add(Restrictions.eq("id", id))
                     .uniqueResult();
             Hibernate.initialize(image.getTags()); // doing a join on tags table
             Hibernate.initialize(image.getUser()); // doing a join on user table
@@ -70,7 +70,7 @@ public class ImageManager extends SessionManager {
 
             return image;
         } catch(HibernateException e) {
-            System.out.println("unable to retrieve an image from database by its title");
+            System.out.println("unable to retrieve an image from database by its id");
         }
 
         return null;
@@ -122,12 +122,12 @@ public class ImageManager extends SessionManager {
     /**
      * This method deletes an image data from the database
      *
-     * @param title the title of the image that we want to delete
+     * @param id the id of the image that we want to delete
      */
-    public void deleteImage(final String title) {
+    public void deleteImage(final int id) {
         Session session = openSession();
-        Query query = session.createQuery("Delete from " + Image.class.getName() + " where title=:imageTitle");
-        query.setParameter("imageTitle", title);
+        Query query = session.createQuery("Delete from " + Image.class.getName() + " where id=:imageId");
+        query.setParameter("imageId", id);
         query.executeUpdate();
         commitSession(session);
     }

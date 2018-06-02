@@ -1,13 +1,14 @@
 package com.upgrad.ImageHoster;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import static org.springframework.boot.SpringApplication.run;
 
 @SpringBootApplication
 public class ImageHosterApplication {
 
 	public static void main(String[] args) {
 
-		SpringApplication.run(ImageHosterApplication.class, args);
+		run(ImageHosterApplication.class, args);
 	}
 }

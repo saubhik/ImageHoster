@@ -13,12 +13,13 @@
         <property name="hibernate.current_session_context_class">managed</property>
 
         <!-- run once: tell hibernate create our tables in database-->
-        <!--<property name="hbm2ddl.auto">create</property>-->
+        <property name="hbm2ddl.auto">update</property>
 
         <!--&lt;!&ndash;Entity classes to be created as tables in database&ndash;&gt;-->
-        <!--<mapping class="com.upgrad.ImageHoster.model.User" />-->
-        <!--<mapping class="com.upgrad.ImageHoster.model.Image" />-->
-        <!--<mapping class="com.upgrad.ImageHoster.model.Tag" />-->
-        <!--<mapping class="com.upgrad.ImageHoster.model.ProfilePhoto" />-->
+        <mapping class="com.upgrad.ImageHoster.model.User" />
+        <mapping class="com.upgrad.ImageHoster.model.Image" />
+        <mapping class="com.upgrad.ImageHoster.model.Tag" />
+        <mapping class="com.upgrad.ImageHoster.model.ProfilePhoto" />
+        <mapping class="com.upgrad.ImageHoster.model.Comment"/>
     </session-factory>
 </hibernate-configuration>

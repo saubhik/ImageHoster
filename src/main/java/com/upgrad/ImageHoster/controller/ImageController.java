@@ -1,8 +1,10 @@
 package com.upgrad.ImageHoster.controller;
 
+import com.upgrad.ImageHoster.model.Comment;
 import com.upgrad.ImageHoster.model.Image;
 import com.upgrad.ImageHoster.model.Tag;
 import com.upgrad.ImageHoster.model.User;
+import com.upgrad.ImageHoster.service.CommentService;
 import com.upgrad.ImageHoster.service.ImageService;
 import com.upgrad.ImageHoster.service.TagService;
 import com.upgrad.ImageHoster.service.UserService;
@@ -33,6 +35,9 @@ public class ImageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     /**
      * This controller method returns all the images that have been
@@ -126,23 +131,10 @@ public class ImageController {
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
 
-        return "images/image";
-    }
+        List<Comment> comments = commentService.getCommentsByImage(image);
+        model.addAttribute("comments", comments);
 
-    /**
-     * This method deletes a specific image from the database
-     *
-     * @param id id of the image that we want to delete
-     *
-     * @return redirects the user to the homepage view
-     */
-    @RequestMapping("/images/{id}/delete")
-    public String deleteImage(@PathVariable int id) {
-        Image image = imageService.getById(id);
-        imageService.deleteById(image);
-
-
-        return "redirect:/";
+        return "images/image.html";
     }
 
     /**
@@ -163,6 +155,23 @@ public class ImageController {
         model.addAttribute("tags", tags);
 
         return "images/edit";
+    }
+
+    /**
+     * This controller method deletes an image using it's id
+     *
+     * @param id id of the image that we want to delete
+     *
+     * @return the home page
+     */
+    @RequestMapping("/images/{id}/delete")
+    public String deleteImage(@PathVariable int id) {
+
+        Image image = imageService.getById(id);
+        commentService.deleteByImage(image);
+        imageService.deleteById(image);
+
+        return "redirect:/";
     }
 
     /**

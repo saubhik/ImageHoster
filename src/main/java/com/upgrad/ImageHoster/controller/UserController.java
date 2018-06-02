@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -60,16 +62,27 @@ public class UserController {
                              @RequestParam("password") String password,
                              HttpSession session,
                              Model model) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        // Check if username is >= 6 characters
+        if (username.length() < 6) {
+            errors.put("username", "needs to be 6 characters or longer");
+        }
+
+        // Check if password is >= 6 characters
+        if (password.length() < 6) {
+            errors.put("password", "needs to be 6 characters or longer");
+        }
+
         // Check if a user already exists in the database
-        User userFromUsername = userService.getByName(username);
+        if (userService.getByName(username) != null) {
+            errors.put("username", "username has been registered");
+        }
 
-        if (userFromUsername != null) {
 
-            // if a user is found with the given username
-            // return an error
-            String error = "Username has been previously registered";
-            model.addAttribute("error", error);
-
+        if (!errors.isEmpty()) {
+            model.addAttribute("errors", errors);
             return "users/signup";
 
         } else {
